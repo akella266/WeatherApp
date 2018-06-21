@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">WeatherViewer</string>
+    <string name="action_settings">Settings</string>
+    <string name="api_key">f8f0a4ca66b4dd4ccf5558985a3fbd74</string>
+    <string name="web_service_url">http://api.openweathermap.org/data/2.5/forecast?q=</string>
+    <string name="units">imperial</string>
+    <string name="invalid_url">Invalid URL</string>
+    <string name="weather_condition_image">A graphical representation of the weather conditions</string>
+    <string name="high_temp">High: %s</string>
+    <string name="low_temp">Low: %s</string>
+    <string name="day_description">%1$s: %2$s</string>
+    <string name="humidity">Humidity: %s</string>
+    <string name="hint_text">Enter city (e.g., Boston, MA, US)</string>
+    <string name="read_error">Unable to read weather data</string>
+    <string name="connect_error">Unable to connect to OpenWeatherMap.org</string>
+    <string-array name="cities">
+        <item>625144</item>
+        <item>627907</item>
+        <item>629634</item>
+        <item>4298960</item>
+        <item>2988507</item>
+        <item>5245497</item>
+        <item>456172</item>
+    </string-array>
+</resources>
