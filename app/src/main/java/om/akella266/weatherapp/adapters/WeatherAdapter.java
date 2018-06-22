@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.squareup.picasso.Picasso;
+
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -21,7 +23,6 @@ import om.akella266.weatherapp.api.Models.WeatherOld;
 
 public class WeatherAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    Map<String, Bitmap> bitmaps = new HashMap<>();
     List<WeatherOld> list;
 
     public WeatherAdapter(List<WeatherOld> list) {
@@ -48,51 +49,12 @@ public class WeatherAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         viewHolderWeather.lowTextView.setText(w.minTemp);
         viewHolderWeather.humidityTextView.setText(w.humidity);
 
-        if (bitmaps.containsKey(w.iconURL))
-            viewHolderWeather.conditionImageView.setImageBitmap(bitmaps.get(w.iconURL));
-        else
-            new LoadImageTask(viewHolderWeather.conditionImageView).execute(w.iconURL);
+        Picasso.with(viewHolderWeather.conditionImageView.getContext())
+                .load(w.iconURL).into(viewHolderWeather.conditionImageView);
     }
 
     @Override
     public int getItemCount() {
         return list.size();
     }
-
-    private class LoadImageTask extends AsyncTask<String, Void, Bitmap> {
-        private ImageView imageView;
-
-        public LoadImageTask(ImageView imageView) {
-            this.imageView = imageView;
-        }
-
-        @Override
-        protected Bitmap doInBackground(String... strings) {
-            Bitmap bitmap;
-            HttpURLConnection connection = null;
-
-            try{
-                URL url = new URL(strings[0]);
-                connection = (HttpURLConnection) url.openConnection();
-                try(InputStream inputStream = connection.getInputStream()){
-                    bitmap = BitmapFactory.decodeStream(inputStream);
-                    bitmaps.put(strings[0], bitmap);
-                }
-                catch(Exception e){
-                    e.printStackTrace();
-                }
-            }
-            catch(Exception e){
-                e.printStackTrace();
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Bitmap bitmap) {
-            imageView.setImageBitmap(bitmap);
-        }
-    }
 }
-
