@@ -18,7 +18,7 @@
 
         <ImageView
             android:id="@+id/conditionImageView"
-            android:layout_width="@dimen/image_side_length"
+            android:layout_width="@dimen/image_side_length_small"
             android:layout_height="match_parent"
             android:contentDescription="@string/weather_condition_image"
             android:scaleType="fitCenter"

@@ -1,5 +1,7 @@
 package om.akella266.weatherapp;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -30,15 +32,19 @@ import java.util.List;
 import java.util.function.Function;
 
 import om.akella266.weatherapp.adapters.WeatherAdapter;
+import om.akella266.weatherapp.adapters.listeners.ItemClickListener;
 import om.akella266.weatherapp.api.Models.Weather;
 import om.akella266.weatherapp.api.Models.WeatherDataResponse;
 import om.akella266.weatherapp.api.Models.WeatherOld;
 import om.akella266.weatherapp.api.Models.WeatherResponse;
 import om.akella266.weatherapp.api.RestApi;
+import om.akella266.weatherapp.common.AsyncTaskCompleteListener;
+import om.akella266.weatherapp.common.GetWeather;
 import retrofit2.Call;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+        implements AsyncTaskCompleteListener<List<WeatherOld>> {
 
     private ArrayList<WeatherOld> weatherOldList = new ArrayList<>();
     private RecyclerView recyclerView;
@@ -64,9 +70,8 @@ public class MainActivity extends AppCompatActivity {
                 String city = locationEditText.getText().toString();
 
                 RestApi restApi = RestApi.getRestApi();
-                final Call<WeatherResponse> call = restApi.getWeatherByCityName(city, units,
-                                                                    "3", key);
-                new GetWeather().execute(call);
+                launchTask(restApi.getWeatherByCityName(city, units,
+                        "1", key));
                 dismissKeyboard(locationEditText);
             }
         });
@@ -79,8 +84,7 @@ public class MainActivity extends AppCompatActivity {
         }
         ids = ids.substring(0, ids.length()-1);
         RestApi restApi = RestApi.getRestApi();
-        final Call<WeatherResponse> call = restApi.getWeatherGroupCities(ids, units, key);
-        new GetWeather().execute(call);
+        launchTask(restApi.getWeatherGroupCities(ids, units, key));
     }
 
     private void dismissKeyboard(EditText locationEditText) {
@@ -90,48 +94,30 @@ public class MainActivity extends AppCompatActivity {
         imm.hideSoftInputFromWindow(locationEditText.getWindowToken(), 0);
     }
 
-    private void updateUI() {
-
-        if (adapter != null){
-            adapter.setWeather(weatherOldList);
-            adapter.notifyDataSetChanged();
-        }
-        else{
-            adapter = new WeatherAdapter(weatherOldList);
-            recyclerView.setAdapter(adapter);
-        }
+    private void launchTask(Call call){
+        new GetWeather(this).execute(call);
     }
 
-    private class GetWeather extends AsyncTask<Call<WeatherResponse>, Void, List<WeatherOld>>{
-
-        @Override
-        protected List<WeatherOld> doInBackground(Call<WeatherResponse>... calls) {
-            List<WeatherOld> adapterList = new ArrayList<>();
-            try {
-                Call<WeatherResponse> call = calls[0];
-                Response<WeatherResponse> response = call.execute();
-                for(WeatherDataResponse resp : response.body().getList()){
-                    adapterList.add( new WeatherOld(
-                            resp.getName(),
-                            resp.getDt(),
-                            resp.getMain().getTempMin(),
-                            resp.getMain().getTempMax(),
-                            resp.getMain().getHumidity(),
-                            resp.getWeather().get(0).getDescription(),
-                            resp.getWeather().get(0).getIcon()
-                            ));
+    private void updateUI() {
+        if (adapter == null){
+            final Context context = this;
+            adapter = new WeatherAdapter(context, weatherOldList, new ItemClickListener() {
+                @Override
+                public void onItemClick(View v, int position) {
+                    Intent intent = InfoActivity.newIntent(context, weatherOldList.get(position));
+                    startActivity(intent);
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return adapterList;
+            });
+            recyclerView.setAdapter(adapter);
         }
+        adapter.setWeather(weatherOldList);
+        adapter.notifyDataSetChanged();
+    }
 
-        @Override
-        protected void onPostExecute(List<WeatherOld> weatherOlds) {
-            weatherOldList.clear();
-            weatherOldList.addAll(weatherOlds);
-            updateUI();
-        }
+    @Override
+    public void onTaskComplete(List<WeatherOld> result) {
+        weatherOldList.clear();
+        weatherOldList.addAll(result);
+        updateUI();
     }
 }
