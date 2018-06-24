@@ -12,19 +12,13 @@ public class ViewHolderWeather extends RecyclerView.ViewHolder {
 
     ImageView conditionImageView;
     TextView nameTextView;
-    TextView dayTextView;
-    TextView lowTextView;
-    TextView highTextView;
-    TextView humidityTextView;
+    TextView tempTextView;
 
     public ViewHolderWeather(View itemView) {
         super(itemView);
 
         nameTextView = (TextView)itemView.findViewById(R.id.nameTextView);
+        tempTextView = (TextView)itemView.findViewById(R.id.tempTextView);
         conditionImageView = (ImageView)itemView.findViewById(R.id.conditionImageView);
-        dayTextView = (TextView)itemView.findViewById(R.id.dayTextView);
-        lowTextView = (TextView)itemView.findViewById(R.id.lowTextView);
-        highTextView = (TextView)itemView.findViewById(R.id.highTextView);
-        humidityTextView = (TextView)itemView.findViewById(R.id.humidityTextView);
     }
 }

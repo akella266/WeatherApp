@@ -5,5 +5,5 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="fab_margin_top">88dp</dimen>
     <dimen name="image_side_length_small">50dp</dimen>
-    <dimen name="image_side_length_big">200dp</dimen>
+    <dimen name="image_side_length_big">100dp</dimen>
 </resources>
