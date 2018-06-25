@@ -16,9 +16,9 @@ import om.akella266.weatherapp.api.Models.WeatherData;
 
 public class WeatherAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    Context context;
-    List<WeatherData> list;
-    ItemClickListener listener;
+    private Context context;
+    private List<WeatherData> list;
+    private ItemClickListener listener;
 
     public void setWeather(List<WeatherData> _list){
         list = _list;
@@ -58,7 +58,9 @@ public class WeatherAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                                     w.getDescription()));
         viewHolderWeather.tempTextView.setText(context.getString(R.string.temperature, w.getTemp()));
         Picasso.with(viewHolderWeather.conditionImageView.getContext())
-                .load(w.getIconURL()).into(viewHolderWeather.conditionImageView);
+                .load(w.getIconURL())
+                .error(R.drawable.ic_no_content_black_24dp)
+                .into(viewHolderWeather.conditionImageView);
     }
 
     @Override

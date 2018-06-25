@@ -42,6 +42,7 @@ public class InfoActivity extends AppCompatActivity
         final WeatherData weather = intent.getParcelableExtra(EXTRA_WEATHER_DATA);
         setTitle(weather.getCityName());
         initDetails(weather);
+
         launchTask(weather.getCityName());
         rvForecast = findViewById(R.id.rvForecast);
         rvForecast.setLayoutManager(new LinearLayoutManager(getBaseContext()));
@@ -89,6 +90,7 @@ public class InfoActivity extends AppCompatActivity
         humidityTextView.setText(getString(R.string.humidity, w.getHumidity()));
 
         Picasso.with(this).load(w.getIconURL())
+                .error(R.drawable.ic_no_content_black_24dp)
                 .resizeDimen(R.dimen.image_side_length_big, R.dimen.image_side_length_big)
                 .into(conditionImageView);
     }
