@@ -2,6 +2,9 @@ package om.akella266.weatherapp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,10 +23,11 @@ import om.akella266.weatherapp.adapters.WeatherAdapter;
 import om.akella266.weatherapp.api.Models.WeatherData;
 import om.akella266.weatherapp.api.RestApi;
 import om.akella266.weatherapp.common.AsyncTaskCompleteListener;
+import om.akella266.weatherapp.common.AsyncTaskResult;
 import om.akella266.weatherapp.common.GetWeather;
 
 public class InfoActivity extends AppCompatActivity
-        implements AsyncTaskCompleteListener<List<WeatherData>> {
+        implements AsyncTaskCompleteListener<AsyncTaskResult<List<WeatherData>>> {
 
     private int countDays;
     private RecyclerView rvForecast;
@@ -43,7 +47,11 @@ public class InfoActivity extends AppCompatActivity
         setTitle(weather.getCityName());
         initDetails(weather);
 
-        launchTask(weather.getCityName());
+        if (isConnected())
+            launchTask(weather.getCityName());
+        else
+            Snackbar.make(rvForecast, getString(R.string.connect_error), Snackbar.LENGTH_LONG).show();
+
         rvForecast = findViewById(R.id.rvForecast);
         rvForecast.setLayoutManager(new LinearLayoutManager(getBaseContext()));
         weatherList = new ArrayList<>();
@@ -73,6 +81,20 @@ public class InfoActivity extends AppCompatActivity
         RestApi api = RestApi.getRestApi();
         new GetWeather(this)
                 .execute(api.getWeatherByCityName(cityName, units, null, key));
+    }
+
+    private boolean isConnected(){
+        ConnectivityManager cm =
+                (ConnectivityManager)getBaseContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        if (cm != null) {
+            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+            if (activeNetwork != null)
+                return activeNetwork.isConnectedOrConnecting();
+            else
+                return false;
+        }
+        return false;
     }
 
     private void initDetails(WeatherData w){
@@ -114,27 +136,37 @@ public class InfoActivity extends AppCompatActivity
     }
 
     @Override
-    public void onTaskComplete(List<WeatherData> result) {
-        weatherList.add(result.get(0));
-        for(int i = 1; i < result.size(); i++){
-            if (result.get(i).getDay() != result.get(i-1).getDay()){
-                //set middle value for temperature
-                int lastIndex = weatherList.size() - 1;
-                weatherList.get(lastIndex).setTemp((weatherList.get(lastIndex).getMaxTemp()
-                                    + weatherList.get(lastIndex).getMinTemp())/2);
-                weatherList.add(result.get(i));
+    public void onTaskComplete(AsyncTaskResult<List<WeatherData>> result) {
+        if (result != null) {
+            if (result.getError() == null) {
+                List<WeatherData> weatherResult = result.getResult();
+                weatherList.add(weatherResult.get(0));
+                for (int i = 1; i < weatherResult.size(); i++) {
+                    if (weatherResult.get(i).getDay() != weatherResult.get(i - 1).getDay()) {
+                        //set middle value for temperature
+                        int lastIndex = weatherList.size() - 1;
+                        weatherList.get(lastIndex).setTemp((weatherList.get(lastIndex).getMaxTemp()
+                                + weatherList.get(lastIndex).getMinTemp()) / 2);
+                        weatherList.add(weatherResult.get(i));
+                    } else {
+                        //set min and max temp from all list to every day
+                        if (weatherResult.get(i).getMinTemp() < weatherResult.get(i - 1).getMinTemp()) {
+                            weatherList.get(weatherList.size() - 1).setMinTemp(weatherResult.get(i).getMinTemp());
+                        }
+                        if (weatherResult.get(i).getMaxTemp() > weatherResult.get(i - 1).getMaxTemp()) {
+                            weatherList.get(weatherList.size() - 1).setMaxTemp(weatherResult.get(i).getMaxTemp());
+                        }
+                    }
+                }
+                weatherList.remove(0);
+                updateUI();
             }
             else{
-                //set min and max temp from all list to every day
-                if (result.get(i).getMinTemp() < result.get(i-1).getMinTemp()){
-                    weatherList.get(weatherList.size()-1).setMinTemp(result.get(i).getMinTemp());
-                }
-                if (result.get(i).getMaxTemp() > result.get(i-1).getMaxTemp()){
-                    weatherList.get(weatherList.size()-1).setMaxTemp(result.get(i).getMaxTemp());
-                }
+                Snackbar.make(rvForecast, getString(R.string.read_error), Snackbar.LENGTH_LONG).show();
             }
         }
-        weatherList.remove(0);
-        updateUI();
+        else{
+            Snackbar.make(rvForecast, getString(R.string.connect_error), Snackbar.LENGTH_LONG).show();
+        }
     }
 }

@@ -2,8 +2,11 @@ package om.akella266.weatherapp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,11 +24,12 @@ import om.akella266.weatherapp.adapters.listeners.ItemClickListener;
 import om.akella266.weatherapp.api.Models.WeatherData;
 import om.akella266.weatherapp.api.RestApi;
 import om.akella266.weatherapp.common.AsyncTaskCompleteListener;
+import om.akella266.weatherapp.common.AsyncTaskResult;
 import om.akella266.weatherapp.common.GetWeather;
 import retrofit2.Call;
 
 public class MainActivity extends AppCompatActivity
-        implements AsyncTaskCompleteListener<List<WeatherData>> {
+        implements AsyncTaskCompleteListener<AsyncTaskResult<List<WeatherData>>> {
 
     private ArrayList<WeatherData> weatherList = new ArrayList<>();
     private RecyclerView recyclerView;
@@ -50,22 +54,21 @@ public class MainActivity extends AppCompatActivity
                 EditText locationEditText = (EditText) findViewById(R.id.locationEditText);
                 String city = locationEditText.getText().toString();
 
-                RestApi restApi = RestApi.getRestApi();
-                launchTask(restApi.getWeatherByCityName(city, units,
-                        "1", key));
-                dismissKeyboard(locationEditText);
+                if (isConnected()) {
+                    RestApi restApi = RestApi.getRestApi();
+                    launchTask(restApi.getWeatherByCityName(city, units,
+                            "1", key));
+                    dismissKeyboard(locationEditText);
+                }
+                else{
+                    Snackbar.make(recyclerView, getString(R.string.connect_error), Snackbar.LENGTH_LONG).show();
+                }
             }
         });
 
         recyclerView = (RecyclerView)findViewById(R.id.weatherRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getBaseContext()));
-        String ids = "";
-        for(String id : getResources().getStringArray(R.array.cities)){
-            ids += id + ",";
-        }
-        ids = ids.substring(0, ids.length()-1);
-        RestApi restApi = RestApi.getRestApi();
-        launchTask(restApi.getWeatherGroupCities(ids, units, key));
+        setDefaultForecast();
     }
 
     private void dismissKeyboard(EditText locationEditText) {
@@ -77,6 +80,35 @@ public class MainActivity extends AppCompatActivity
 
     private void launchTask(Call call){
         new GetWeather(this).execute(call);
+    }
+
+    private void setDefaultForecast(){
+        if (isConnected()) {
+            String ids = "";
+            for (String id : getResources().getStringArray(R.array.cities)) {
+                ids += id + ",";
+            }
+            ids = ids.substring(0, ids.length() - 1);
+            RestApi restApi = RestApi.getRestApi();
+            launchTask(restApi.getWeatherGroupCities(ids, units, key));
+        }
+        else{
+            Snackbar.make(recyclerView, getString(R.string.connect_error), Snackbar.LENGTH_LONG).show();
+        }
+    }
+
+    private boolean isConnected(){
+        ConnectivityManager cm =
+                (ConnectivityManager)getBaseContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        if (cm != null) {
+            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+            if (activeNetwork != null)
+                return activeNetwork.isConnectedOrConnecting();
+            else
+                return false;
+        }
+        return false;
     }
 
     private void updateUI() {
@@ -96,9 +128,18 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onTaskComplete(List<WeatherData> result) {
+    public void onTaskComplete(AsyncTaskResult<List<WeatherData>> result) {
         weatherList.clear();
-        weatherList.addAll(result);
-        updateUI();
+        if (result != null) {
+            if (result.getError() == null) {
+                weatherList.addAll(result.getResult());
+                updateUI();
+            } else {
+                Snackbar.make(recyclerView, getString(R.string.read_error), Snackbar.LENGTH_LONG).show();
+            }
+        }
+        else{
+            Snackbar.make(recyclerView, getString(R.string.connect_error), Snackbar.LENGTH_LONG).show();
+        }
     }
 }
