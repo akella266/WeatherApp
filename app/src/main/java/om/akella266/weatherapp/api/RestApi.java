@@ -1,8 +1,6 @@
 package om.akella266.weatherapp.api;
 
-import java.util.List;
-
-import om.akella266.weatherapp.api.Models.WeatherResponse;
+import om.akella266.weatherapp.api.models.WeatherResponse;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.moshi.MoshiConverterFactory;

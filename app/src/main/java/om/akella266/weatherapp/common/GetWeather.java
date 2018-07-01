@@ -6,9 +6,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import om.akella266.weatherapp.api.Models.WeatherDataResponse;
-import om.akella266.weatherapp.api.Models.WeatherData;
-import om.akella266.weatherapp.api.Models.WeatherResponse;
+import om.akella266.weatherapp.api.models.WeatherDataResponse;
+import om.akella266.weatherapp.api.models.WeatherData;
+import om.akella266.weatherapp.api.models.WeatherResponse;
 import retrofit2.Call;
 import retrofit2.Response;
 

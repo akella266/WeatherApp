@@ -1,8 +1,7 @@
-package om.akella266.weatherapp.api.Models;
+package om.akella266.weatherapp.api.models;
 
 import com.squareup.moshi.Json;
 import java.util.List;
-import om.akella266.weatherapp.api.Models.City;
 
 public class WeatherResponse {
     @Json(name = "cod")

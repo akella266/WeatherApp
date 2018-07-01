@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import om.akella266.weatherapp.adapters.WeatherAdapter;
-import om.akella266.weatherapp.api.Models.WeatherData;
+import om.akella266.weatherapp.api.models.WeatherData;
 import om.akella266.weatherapp.api.RestApi;
 import om.akella266.weatherapp.common.AsyncTaskCompleteListener;
 import om.akella266.weatherapp.common.AsyncTaskResult;

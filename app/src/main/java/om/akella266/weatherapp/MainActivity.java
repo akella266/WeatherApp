@@ -24,7 +24,7 @@ import java.util.List;
 
 import om.akella266.weatherapp.adapters.WeatherAdapter;
 import om.akella266.weatherapp.adapters.listeners.ItemClickListener;
-import om.akella266.weatherapp.api.Models.WeatherData;
+import om.akella266.weatherapp.api.models.WeatherData;
 import om.akella266.weatherapp.api.RestApi;
 import om.akella266.weatherapp.common.AsyncTaskCompleteListener;
 import om.akella266.weatherapp.common.AsyncTaskResult;
@@ -45,14 +45,14 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        locationEditText = (EditText) findViewById(R.id.locationEditText);
+        locationEditText = findViewById(R.id.locationEditText);
 
         units = getString(R.string.units);
         key = getString(R.string.api_key);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -70,16 +70,18 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        recyclerView = (RecyclerView)findViewById(R.id.weatherRecyclerView);
+        recyclerView = findViewById(R.id.weatherRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getBaseContext()));
         setDefaultForecast();
     }
 
     private void dismissKeyboard(EditText locationEditText) {
         InputMethodManager imm =
-                (InputMethodManager) getSystemService(getBaseContext().INPUT_METHOD_SERVICE);
+                (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
 
-        imm.hideSoftInputFromWindow(locationEditText.getWindowToken(), 0);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(locationEditText.getWindowToken(), 0);
+        }
     }
 
     private void launchTask(Call call){

@@ -12,9 +12,9 @@ import java.util.List;
 
 import om.akella266.weatherapp.R;
 import om.akella266.weatherapp.adapters.listeners.ItemClickListener;
-import om.akella266.weatherapp.api.Models.WeatherData;
+import om.akella266.weatherapp.api.models.WeatherData;
 
-public class WeatherAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class WeatherAdapter extends RecyclerView.Adapter<ViewHolderWeather> {
 
     private Context context;
     private List<WeatherData> list;
@@ -31,7 +31,7 @@ public class WeatherAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolderWeather onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.card_weather, parent, false);
 
@@ -49,8 +49,7 @@ public class WeatherAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        ViewHolderWeather viewHolderWeather = (ViewHolderWeather) holder;
+    public void onBindViewHolder(ViewHolderWeather viewHolderWeather, int position) {
         WeatherData w = list.get(position);
         viewHolderWeather.nameTextView.setText(context.getString(R.string.day_description,
                                                     w.getCityName(),

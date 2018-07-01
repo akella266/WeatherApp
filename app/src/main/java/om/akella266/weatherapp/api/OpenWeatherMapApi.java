@@ -1,12 +1,9 @@
 package om.akella266.weatherapp.api;
 
-import java.util.List;
-
-import om.akella266.weatherapp.api.Models.WeatherResponse;
+import om.akella266.weatherapp.api.models.WeatherResponse;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
-import retrofit2.http.QueryMap;
 
 interface OpenWeatherMapApi {
 

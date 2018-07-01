@@ -1,4 +1,4 @@
-package om.akella266.weatherapp.api.Models;
+package om.akella266.weatherapp.api.models;
 
 import com.squareup.moshi.Json;
 
