@@ -11,6 +11,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 
 import android.view.inputmethod.InputMethodManager;
@@ -31,6 +34,7 @@ import retrofit2.Call;
 public class MainActivity extends AppCompatActivity
         implements AsyncTaskCompleteListener<AsyncTaskResult<List<WeatherData>>> {
 
+    private EditText locationEditText;
     private ArrayList<WeatherData> weatherList = new ArrayList<>();
     private RecyclerView recyclerView;
     private WeatherAdapter adapter;
@@ -43,6 +47,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        locationEditText = (EditText) findViewById(R.id.locationEditText);
 
         units = getString(R.string.units);
         key = getString(R.string.api_key);
@@ -51,7 +56,6 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                EditText locationEditText = (EditText) findViewById(R.id.locationEditText);
                 String city = locationEditText.getText().toString();
 
                 if (isConnected()) {
@@ -125,6 +129,27 @@ public class MainActivity extends AppCompatActivity
         }
         adapter.setWeather(weatherList);
         adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_activity_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.reset:{
+                locationEditText.setText("");
+                setDefaultForecast();
+                return true;
+            }
+            default:{
+                return super.onOptionsItemSelected(item);
+            }
+        }
     }
 
     @Override

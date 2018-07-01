@@ -14,6 +14,7 @@
     <string name="hint_text">Enter city (e.g., Boston, MA, US)</string>
     <string name="read_error">Unable to read weather data</string>
     <string name="connect_error">Unable to connect to OpenWeatherMap.org</string>
+    <string name="menu_reset">Reset</string>
     <string-array name="cities">
         <item>625144</item>
         <item>627907</item>
