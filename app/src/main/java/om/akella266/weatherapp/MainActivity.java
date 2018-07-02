@@ -11,13 +11,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +51,16 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         locationEditText = findViewById(R.id.locationEditText);
+        locationEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEND){
+                    searchCityForecast();
+                    return true;
+                }
+                return false;
+            }
+        });
 
         units = getString(R.string.units);
         key = getString(R.string.api_key);
@@ -56,17 +69,7 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String city = locationEditText.getText().toString();
-
-                if (isConnected()) {
-                    RestApi restApi = RestApi.getRestApi();
-                    launchTask(restApi.getWeatherByCityName(city, units,
-                            "1", key));
-                    dismissKeyboard(locationEditText);
-                }
-                else{
-                    Snackbar.make(recyclerView, getString(R.string.connect_error), Snackbar.LENGTH_LONG).show();
-                }
+                searchCityForecast();
             }
         });
 
@@ -97,6 +100,20 @@ public class MainActivity extends AppCompatActivity
             ids = ids.substring(0, ids.length() - 1);
             RestApi restApi = RestApi.getRestApi();
             launchTask(restApi.getWeatherGroupCities(ids, units, key));
+        }
+        else{
+            Snackbar.make(recyclerView, getString(R.string.connect_error), Snackbar.LENGTH_LONG).show();
+        }
+    }
+
+    private void searchCityForecast(){
+        String city = locationEditText.getText().toString().trim();
+
+        if (isConnected()) {
+            RestApi restApi = RestApi.getRestApi();
+            launchTask(restApi.getWeatherByCityName(city, units,
+                    "1", key));
+            dismissKeyboard(locationEditText);
         }
         else{
             Snackbar.make(recyclerView, getString(R.string.connect_error), Snackbar.LENGTH_LONG).show();
@@ -152,6 +169,12 @@ public class MainActivity extends AppCompatActivity
                 return super.onOptionsItemSelected(item);
             }
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateUI();
     }
 
     @Override

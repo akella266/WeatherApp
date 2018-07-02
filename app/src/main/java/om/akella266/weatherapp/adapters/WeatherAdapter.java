@@ -35,7 +35,6 @@ public class WeatherAdapter extends RecyclerView.Adapter<ViewHolderWeather> {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.card_weather, parent, false);
 
-
         final ViewHolderWeather viewHolder = new ViewHolderWeather(view);
         if (listener != null) {
             view.setOnClickListener(new View.OnClickListener() {
