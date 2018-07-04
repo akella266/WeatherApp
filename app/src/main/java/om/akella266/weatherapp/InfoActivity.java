@@ -2,6 +2,7 @@ package om.akella266.weatherapp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.design.widget.Snackbar;
@@ -10,6 +11,9 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -33,6 +37,7 @@ public class InfoActivity extends AppCompatActivity
     private RecyclerView rvForecast;
     private List<WeatherData> weatherList;
     private WeatherAdapter adapter;
+    private WeatherData weather;
 
     public static final String EXTRA_WEATHER_DATA = "on.akella266.infointent.weather_data";
 
@@ -42,8 +47,9 @@ public class InfoActivity extends AppCompatActivity
         setContentView(R.layout.activity_info);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         Intent intent = getIntent();
-        final WeatherData weather = intent.getParcelableExtra(EXTRA_WEATHER_DATA);
+        weather = intent.getParcelableExtra(EXTRA_WEATHER_DATA);
         setTitle(weather.getCityName());
         initDetails(weather);
 
@@ -136,6 +142,37 @@ public class InfoActivity extends AppCompatActivity
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.info_activity_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.add_item:{
+                SharedPreferences prefs = getSharedPreferences(MainActivity.MAIN_PREFERENCES, MODE_PRIVATE);
+                String citiesId = prefs.getString(MainActivity.PREFERENCES_CITIES, "");
+                if (citiesId.contains(weather.getCityId())){
+                    Snackbar.make(rvForecast, R.string.city_exists_error, Snackbar.LENGTH_LONG).show();
+                }
+                else{
+                    citiesId += "," + weather.getCityId();
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putString(MainActivity.PREFERENCES_CITIES, citiesId);
+                    editor.apply();
+                    Snackbar.make(rvForecast, R.string.city_added, Snackbar.LENGTH_LONG).show();
+                }
+                return true;
+            }
+            default:{
+                return super.onOptionsItemSelected(item);
+            }
+        }
+    }
+
+    @Override
     public void onTaskComplete(AsyncTaskResult<List<WeatherData>> result) {
         if (result != null) {
             if (result.getError() == null) {
@@ -147,7 +184,9 @@ public class InfoActivity extends AppCompatActivity
                         int lastIndex = weatherList.size() - 1;
                         weatherList.get(lastIndex).setTemp((weatherList.get(lastIndex).getMaxTemp()
                                 + weatherList.get(lastIndex).getMinTemp()) / 2);
-                        weatherList.add(weatherResult.get(i));
+                        WeatherData weatherData = weatherResult.get(i);
+                        weatherData.setCityName("");
+                        weatherList.add(weatherData);
                     } else {
                         //set min and max temp from all list to every day
                         if (weatherResult.get(i).getMinTemp() < weatherResult.get(i - 1).getMinTemp()) {

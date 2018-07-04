@@ -7,6 +7,8 @@ import com.squareup.moshi.Json;
 import java.util.List;
 
 public class WeatherDataResponse implements Parcelable{
+    @Json(name = "id")
+    private Long id;
     @Json(name = "dt")
     private Integer dt;
     @Json(name = "name")
@@ -25,6 +27,7 @@ public class WeatherDataResponse implements Parcelable{
         name = in.readString();
         main = (Main) in.readValue(Main.class.getClassLoader());
         in.readList(weather, Weather.class.getClassLoader());
+        id = in.readLong();
     }
 
     public static final Creator<WeatherDataResponse> CREATOR = new Creator<WeatherDataResponse>() {
@@ -50,6 +53,7 @@ public class WeatherDataResponse implements Parcelable{
         dest.writeString(name);
         dest.writeValue(main);
         dest.writeList(weather);
+        dest.writeLong(id);
     }
 
     public Integer getDt() {
@@ -82,5 +86,13 @@ public class WeatherDataResponse implements Parcelable{
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

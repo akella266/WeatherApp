@@ -2,6 +2,7 @@ package om.akella266.weatherapp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -37,12 +39,18 @@ import retrofit2.Call;
 public class MainActivity extends AppCompatActivity
         implements AsyncTaskCompleteListener<AsyncTaskResult<List<WeatherData>>> {
 
+    public static final String PREFERENCES_CITIES = "cities";
+    public static final String MAIN_PREFERENCES = "main_preferences";
+
     private EditText locationEditText;
     private ArrayList<WeatherData> weatherList = new ArrayList<>();
     private RecyclerView recyclerView;
     private WeatherAdapter adapter;
     private String units;
     private String key;
+    private String citiesId;
+    ItemTouchHelper swipeToDismissEvent;
+    private boolean isSearched;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +70,8 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        isSearched = false;
+        citiesId = getCitiesFromPreferences();
         units = getString(R.string.units);
         key = getString(R.string.api_key);
 
@@ -75,7 +85,48 @@ public class MainActivity extends AppCompatActivity
 
         recyclerView = findViewById(R.id.weatherRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getBaseContext()));
+        initSwipeDismiss();
+
         setDefaultForecast();
+    }
+
+    private void initSwipeDismiss() {
+        swipeToDismissEvent = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(
+                ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT,
+                ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT)
+        {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder,
+                                  RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                WeatherData city = weatherList.get(viewHolder.getAdapterPosition());
+                if (citiesId.startsWith(city.getCityId())){
+                    citiesId = citiesId.replaceAll(city.getCityId() + ",", "");
+                }
+                else{
+                    citiesId = citiesId.replaceAll("," + city.getCityId(), "");
+                }
+
+                SharedPreferences prefs = getSharedPreferences(MAIN_PREFERENCES, MODE_PRIVATE);
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putString(PREFERENCES_CITIES, citiesId);
+                editor.apply();
+                weatherList.remove(city);
+                updateUI();
+            }
+        });
+        setSwipeDismiss();
+    }
+
+    private void setSwipeDismiss(){
+        swipeToDismissEvent.attachToRecyclerView(recyclerView);
+    }
+    private void unsetSwipeDismiss(){
+        swipeToDismissEvent.attachToRecyclerView(null);
     }
 
     private void dismissKeyboard(EditText locationEditText) {
@@ -91,15 +142,37 @@ public class MainActivity extends AppCompatActivity
         new GetWeather(this).execute(call);
     }
 
-    private void setDefaultForecast(){
-        if (isConnected()) {
-            String ids = "";
-            for (String id : getResources().getStringArray(R.array.cities)) {
-                ids += id + ",";
+    private String getCitiesFromResource(){
+        String ids = "";
+        for (String id : getResources().getStringArray(R.array.cities)) {
+            ids += id + ",";
+        }
+        ids = ids.substring(0, ids.length() - 1);
+        return ids;
+    }
+
+    private String getCitiesFromPreferences(){
+        SharedPreferences prefs = getSharedPreferences(MAIN_PREFERENCES, MODE_PRIVATE);
+        if (!prefs.contains(PREFERENCES_CITIES)){
+            SharedPreferences.Editor editor = prefs.edit();
+            String ids = getCitiesFromResource();
+            editor.putString(PREFERENCES_CITIES, ids);
+            editor.apply();
+        }
+        prefs.registerOnSharedPreferenceChangeListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
+            @Override
+            public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+                citiesId = prefs.getString(key, "");
             }
-            ids = ids.substring(0, ids.length() - 1);
+        });
+        return prefs.getString(PREFERENCES_CITIES, "");
+    }
+
+    private void setDefaultForecast(){
+        if (isConnected() && !citiesId.equals("")) {
             RestApi restApi = RestApi.getRestApi();
-            launchTask(restApi.getWeatherGroupCities(ids, units, key));
+            launchTask(restApi.getWeatherGroupCities(citiesId, units, key));
+            setSwipeDismiss();
         }
         else{
             Snackbar.make(recyclerView, getString(R.string.connect_error), Snackbar.LENGTH_LONG).show();
@@ -107,6 +180,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void searchCityForecast(){
+        unsetSwipeDismiss();
         String city = locationEditText.getText().toString().trim();
 
         if (isConnected()) {
@@ -174,7 +248,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        updateUI();
+        setDefaultForecast();
     }
 
     @Override

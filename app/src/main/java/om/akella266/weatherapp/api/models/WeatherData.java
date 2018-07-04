@@ -9,6 +9,8 @@ import java.util.Calendar;
 import java.util.TimeZone;
 
 public class WeatherData implements Parcelable {
+
+    private String cityId;
     private String cityName;
     private String dayOfWeek;
     private int day;
@@ -19,7 +21,7 @@ public class WeatherData implements Parcelable {
     private String description;
     private String iconURL;
 
-    public WeatherData(String cityName, long timeStamp, double temp, double minTemp, double maxTemp,
+    public WeatherData(String cityId, String cityName, long timeStamp, double temp, double minTemp, double maxTemp,
                        double humidity, String description, String iconName){
 
         //NumberFormat for format temperature in whole number
@@ -34,6 +36,7 @@ public class WeatherData implements Parcelable {
         calendar.add(Calendar.MILLISECOND, tz.getOffset(calendar.getTimeInMillis()));
         SimpleDateFormat dateFormater = new SimpleDateFormat();
 
+        this.cityId = cityId;
         this.day = calendar.get(Calendar.DAY_OF_MONTH);
         this.dayOfWeek = dateFormater.format(calendar.getTime());
         this.temp = temp;
@@ -54,6 +57,7 @@ public class WeatherData implements Parcelable {
         iconURL = in.readString();
         day = in.readInt();
         temp = in.readDouble();
+        cityId = in.readString();
     }
 
     public static final Creator<WeatherData> CREATOR = new Creator<WeatherData>() {
@@ -84,6 +88,7 @@ public class WeatherData implements Parcelable {
         dest.writeString(iconURL);
         dest.writeInt(day);
         dest.writeDouble(temp);
+        dest.writeString(cityId);
     }
 
     public String getCityName() {
@@ -156,5 +161,13 @@ public class WeatherData implements Parcelable {
 
     public void setIconURL(String iconURL) {
         this.iconURL = iconURL;
+    }
+
+    public String getCityId() {
+        return cityId;
+    }
+
+    public void setCityId(String cityId) {
+        this.cityId = cityId;
     }
 }

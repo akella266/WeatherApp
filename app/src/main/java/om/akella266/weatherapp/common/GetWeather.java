@@ -29,7 +29,15 @@ public class GetWeather extends AsyncTask<Call<WeatherResponse>, Void, AsyncTask
             Response<WeatherResponse> response = call.execute();
             if (response.isSuccessful()) {
                 for (WeatherDataResponse resp : response.body().getList()) {
+                    String cityId;
+                    if (response.body().getCity() != null){
+                        cityId = response.body().getCity().getId().toString();
+                    }
+                    else{
+                        cityId = resp.getId().toString();
+                    }
                     adapterList.add(new WeatherData(
+                            cityId,
                             resp.getName() == null ? response.body().getCity().getName() : resp.getName(),
                             resp.getDt(),
                             resp.getMain().getTemp(),
