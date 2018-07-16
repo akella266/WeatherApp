@@ -1,18 +1,24 @@
 package om.akella266.weatherapp.api.models;
 
-import com.squareup.moshi.Json;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 public class WeatherResponse {
-    @Json(name = "cod")
+    @SerializedName("cod")
+    @Expose
     private String cod;
-    @Json(name = "message")
-    private Double message;
-    @Json(name = "cnt")
+    @SerializedName("message")
+    @Expose
+    private String message;
+    @SerializedName("count")
+    @Expose
     private Integer cnt;
-    @Json(name = "list")
+    @SerializedName("list")
+    @Expose
     private List<WeatherDataResponse> list = null;
-    @Json(name = "city")
+    @SerializedName("city")
+    @Expose
     private City city;
 
     public String getCod() {
@@ -23,11 +29,11 @@ public class WeatherResponse {
         this.cod = cod;
     }
 
-    public Double getMessage() {
+    public String getMessage() {
         return message;
     }
 
-    public void setMessage(Double message) {
+    public void setMessage(String message) {
         this.message = message;
     }
 

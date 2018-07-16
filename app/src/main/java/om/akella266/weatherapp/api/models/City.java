@@ -1,14 +1,18 @@
 package om.akella266.weatherapp.api.models;
 
-import com.squareup.moshi.Json;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 public class City {
 
-    @Json(name = "id")
+    @SerializedName("id")
+    @Expose
     private Integer id;
-    @Json(name = "name")
+    @SerializedName("name")
+    @Expose
     private String name;
-    @Json(name = "country")
+    @SerializedName("country")
+    @Expose
     private String country;
 
     public Integer getId() {

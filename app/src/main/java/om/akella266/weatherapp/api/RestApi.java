@@ -3,7 +3,7 @@ package om.akella266.weatherapp.api;
 import om.akella266.weatherapp.api.models.WeatherResponse;
 import retrofit2.Call;
 import retrofit2.Retrofit;
-import retrofit2.converter.moshi.MoshiConverterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RestApi implements OpenWeatherMapApi {
 
@@ -13,7 +13,7 @@ public class RestApi implements OpenWeatherMapApi {
     private RestApi(){
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://api.openweathermap.org/")
-                .addConverterFactory(MoshiConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create())
                 .build();
         api = retrofit.create(OpenWeatherMapApi.class);
     }
@@ -34,5 +34,10 @@ public class RestApi implements OpenWeatherMapApi {
     @Override
     public Call<WeatherResponse> getWeatherGroupCities(String citiesID, String units, String key) {
         return api.getWeatherGroupCities(citiesID, units, key);
+    }
+
+    @Override
+    public Call<WeatherResponse> findCities(String nameOfCity, String key) {
+        return api.findCities(nameOfCity, key);
     }
 }

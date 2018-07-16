@@ -9,7 +9,7 @@
     <string name="temperature">Temperature: %.0f°C</string>
     <string name="high_temp">High: %.0f°C</string>
     <string name="low_temp">Low: %.0f°C</string>
-    <string name="day_description">%1$s %2$s: %3$s</string>
+    <string name="day_description">%1$s %2$s %3$s: %4$s</string>
     <string name="humidity">Humidity: %s</string>
     <string name="hint_text">Enter city (e.g., Boston, MA, US)</string>
     <string-array name="cities">

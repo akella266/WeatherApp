@@ -111,7 +111,7 @@ public class InfoActivity extends AppCompatActivity
         TextView humidityTextView = findViewById(R.id.humidityTextViewDetails);
         TextView temperatureTextView = findViewById(R.id.temperatureViewDetails);
 
-        dayTextView.setText(getString(R.string.day_description, "", w.getDayOfWeek(), w.getDescription()));
+        dayTextView.setText(getString(R.string.day_description, "","", w.getDayOfWeek(), w.getDescription()));
         temperatureTextView.setText(getString(R.string.temperature, w.getTemp()));
         highTextView.setText(getString(R.string.high_temp,w.getMaxTemp()));
         lowTextView.setText(getString(R.string.low_temp, w.getMinTemp()));

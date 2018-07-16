@@ -1,15 +1,20 @@
 package om.akella266.weatherapp.api.models;
 
-import com.squareup.moshi.Json;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 public class Weather {
-    @Json(name = "id")
+    @SerializedName("id")
+    @Expose
     private Integer id;
-    @Json(name = "main")
+    @SerializedName("main")
+    @Expose
     private String main;
-    @Json(name = "description")
+    @SerializedName("description")
+    @Expose
     private String description;
-    @Json(name = "icon")
+    @SerializedName("icon")
+    @Expose
     private String icon;
 
     public Integer getId() {

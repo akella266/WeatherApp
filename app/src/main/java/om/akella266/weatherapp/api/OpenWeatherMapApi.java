@@ -17,4 +17,8 @@ interface OpenWeatherMapApi {
     Call<WeatherResponse> getWeatherGroupCities(@Query("id") String id,
                                                 @Query("units") String units,
                                                 @Query("APPID") String key);
+
+    @GET("data/2.5/find")
+    Call<WeatherResponse> findCities(@Query("q") String nameOfCity,
+                                     @Query("APPID") String key);
 }

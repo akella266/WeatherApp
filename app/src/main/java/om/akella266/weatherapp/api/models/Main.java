@@ -1,18 +1,24 @@
 package om.akella266.weatherapp.api.models;
 
-import com.squareup.moshi.Json;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 public class Main {
 
-    @Json(name = "temp")
+    @SerializedName("temp")
+    @Expose
     private Double temp;
-    @Json(name = "temp_min")
+    @SerializedName("temp_min")
+    @Expose
     private Double tempMin;
-    @Json(name = "temp_max")
+    @SerializedName("temp_max")
+    @Expose
     private Double tempMax;
-    @Json(name = "pressure")
+    @SerializedName("pressure")
+    @Expose
     private Double pressure;
-    @Json(name = "humidity")
+    @SerializedName("humidity")
+    @Expose
     private Integer humidity;
 
     public Double getTemp() {

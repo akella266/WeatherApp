@@ -50,7 +50,6 @@ public class MainActivity extends AppCompatActivity
     private String key;
     private String citiesId;
     ItemTouchHelper swipeToDismissEvent;
-    private boolean isSearched;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +69,6 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        isSearched = false;
         citiesId = getCitiesFromPreferences();
         units = getString(R.string.units);
         key = getString(R.string.api_key);
@@ -185,8 +183,9 @@ public class MainActivity extends AppCompatActivity
 
         if (isConnected()) {
             RestApi restApi = RestApi.getRestApi();
-            launchTask(restApi.getWeatherByCityName(city, units,
-                    "1", key));
+            launchTask(restApi.findCities(city, key));
+//            launchTask(restApi.getWeatherByCityName(city, units,
+//                    "1", key));
             dismissKeyboard(locationEditText);
         }
         else{

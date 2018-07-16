@@ -13,6 +13,7 @@ public class WeatherData implements Parcelable {
     private String cityId;
     private String cityName;
     private String dayOfWeek;
+    private String country;
     private int day;
     private double temp;
     private double minTemp;
@@ -21,7 +22,7 @@ public class WeatherData implements Parcelable {
     private String description;
     private String iconURL;
 
-    public WeatherData(String cityId, String cityName, long timeStamp, double temp, double minTemp, double maxTemp,
+    public WeatherData(String cityId, String cityName, String country, long timeStamp, double temp, double minTemp, double maxTemp,
                        double humidity, String description, String iconName){
 
         //NumberFormat for format temperature in whole number
@@ -38,6 +39,7 @@ public class WeatherData implements Parcelable {
 
         this.cityId = cityId;
         this.day = calendar.get(Calendar.DAY_OF_MONTH);
+        this.country = country;
         this.dayOfWeek = dateFormater.format(calendar.getTime());
         this.temp = temp;
         this.minTemp = minTemp;
@@ -58,6 +60,7 @@ public class WeatherData implements Parcelable {
         day = in.readInt();
         temp = in.readDouble();
         cityId = in.readString();
+        country = in.readString();
     }
 
     public static final Creator<WeatherData> CREATOR = new Creator<WeatherData>() {
@@ -89,6 +92,7 @@ public class WeatherData implements Parcelable {
         dest.writeInt(day);
         dest.writeDouble(temp);
         dest.writeString(cityId);
+        dest.writeString(country);
     }
 
     public String getCityName() {
@@ -169,5 +173,13 @@ public class WeatherData implements Parcelable {
 
     public void setCityId(String cityId) {
         this.cityId = cityId;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
     }
 }

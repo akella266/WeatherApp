@@ -52,6 +52,7 @@ public class WeatherAdapter extends RecyclerView.Adapter<ViewHolderWeather> {
         WeatherData w = list.get(position);
         viewHolderWeather.nameTextView.setText(context.getString(R.string.day_description,
                                                     w.getCityName(),
+                                                    w.getCountry(),
                                                     w.getDayOfWeek(),
                                                     w.getDescription()));
         viewHolderWeather.tempTextView.setText(context.getString(R.string.temperature, w.getTemp()));

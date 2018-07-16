@@ -39,6 +39,7 @@ public class GetWeather extends AsyncTask<Call<WeatherResponse>, Void, AsyncTask
                     adapterList.add(new WeatherData(
                             cityId,
                             resp.getName() == null ? response.body().getCity().getName() : resp.getName(),
+                            resp.getSys().getCountry(),
                             resp.getDt(),
                             resp.getMain().getTemp(),
                             resp.getMain().getTempMin(),

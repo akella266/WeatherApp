@@ -3,19 +3,31 @@ package om.akella266.weatherapp.api.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.squareup.moshi.Json;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 public class WeatherDataResponse implements Parcelable{
-    @Json(name = "id")
+    @SerializedName("id")
+    @Expose
     private Long id;
-    @Json(name = "dt")
+    @SerializedName("coord")
+    @Expose
+    private Coord coord;
+    @SerializedName("dt")
+    @Expose
     private Integer dt;
-    @Json(name = "name")
+    @SerializedName("sys")
+    @Expose
+    private Sys sys;
+    @SerializedName("name")
+    @Expose
     private String name;
-    @Json(name = "main")
+    @SerializedName("main")
+    @Expose
     private Main main;
-    @Json(name = "weather")
+    @SerializedName("weather")
+    @Expose
     private List<Weather> weather = null;
 
     private WeatherDataResponse(Parcel in) {
@@ -28,6 +40,8 @@ public class WeatherDataResponse implements Parcelable{
         main = (Main) in.readValue(Main.class.getClassLoader());
         in.readList(weather, Weather.class.getClassLoader());
         id = in.readLong();
+        coord = (Coord) in.readValue(Coord.class.getClassLoader());
+        sys = (Sys) in.readValue(Sys.class.getClassLoader());
     }
 
     public static final Creator<WeatherDataResponse> CREATOR = new Creator<WeatherDataResponse>() {
@@ -54,6 +68,8 @@ public class WeatherDataResponse implements Parcelable{
         dest.writeValue(main);
         dest.writeList(weather);
         dest.writeLong(id);
+        dest.writeValue(coord);
+        dest.writeValue(sys);
     }
 
     public Integer getDt() {
@@ -94,5 +110,21 @@ public class WeatherDataResponse implements Parcelable{
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Coord getCoord() {
+        return coord;
+    }
+
+    public void setCoord(Coord coord) {
+        this.coord = coord;
+    }
+
+    public Sys getSys() {
+        return sys;
+    }
+
+    public void setSys(Sys sys) {
+        this.sys = sys;
     }
 }
